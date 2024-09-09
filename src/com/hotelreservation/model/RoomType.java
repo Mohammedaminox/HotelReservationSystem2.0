@@ -1,4 +1,5 @@
 package com.hotelreservation.model;
 
-public class RoomType {
+public enum RoomType {
+    SINGLE, DOUBLE, SUITE;
 }
