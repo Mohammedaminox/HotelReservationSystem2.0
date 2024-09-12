@@ -33,6 +33,14 @@ public class Reservation {
         return room;
     }
 
+    public LocalDate getCheckInDate() {
+        return checkInDate;
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
 
     //setters
     public void setCheckOutDate(LocalDate checkOutDate) {
@@ -43,19 +51,10 @@ public class Reservation {
         this.checkInDate = checkInDate;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
 
     public void setRoom(Room room) {
         this.room = room;
     }
 
-    public LocalDate getCheckInDate() {
-        return checkInDate;
-    }
 
-    public LocalDate getCheckOutDate() {
-        return checkOutDate;
-    }
 }
