@@ -1,54 +1,56 @@
 package com.hotelreservation;
 
-import com.hotelreservation.model.Reservation;
+import com.hotelreservation.controller.ReservationController;
 import com.hotelreservation.repository.ReservationRepository;
+import com.hotelreservation.repository.RoomRepository;
 import com.hotelreservation.service.ReservationService;
+import com.hotelreservation.service.RoomService;
 
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-//        Hotel hotel = new Hotel(5);
-        Scanner scanner = new Scanner(System.in);
 
-        int choix;
+    public static void main(String[] args) {
+        // Set up repository, service, and controller
+        RoomRepository roomRepository = new RoomRepository();
+        ReservationRepository reservationRepository = new ReservationRepository();
+
+        RoomService roomService = new RoomService(roomRepository);
+        ReservationService reservationService = new ReservationService(reservationRepository);
+
+        ReservationController reservationController = new ReservationController(reservationService, roomService);
+
+        Scanner scanner = new Scanner(System.in);
+        int choice;
 
         do {
-            System.out.println("\n--- Bienvenu ---");
-            System.out.println("1. Créer une réservation");
-            System.out.println("2. Modifier une réservation");
-            System.out.println("3. Annuler une réservation");
-            System.out.println("4. Afficher les réservations");
-            System.out.println("0. Quitter");
-            System.out.print("Choisissez une option : ");
-            choix = scanner.nextInt();
-            scanner.nextLine();
+            System.out.println("1. Create Reservation");
+            System.out.println("2. Update Reservation");
+            System.out.println("3. Cancel Reservation");
+            System.out.println("4. View Reservation");
+            System.out.println("5. List All Reservations");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
 
-            switch (choix) {
+            switch (choice) {
                 case 1:
-                    ReservationRepository reservationRepository = new ReservationRepository();
-                    reservationRepository.addReservation(Reservation reservation);
-
+                    reservationController.createReservation();
                     break;
+
                 case 2:
-
-                    hotel.modifierReservation();
+                    reservationController.updateReservation();
                     break;
-                case 3:
-
-                    hotel.annulerReservation();
-                    break;
-                case 4:
-                    hotel.afficherReservations();
-                    break;
-                case 0:
-                    System.out.println("Au revoir!");
+                // Add other cases as needed
+                case 6:
+                    System.out.println("Exiting...");
                     break;
                 default:
-                    System.out.println("Option invalide. Veuillez réessayer.");
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
             }
-
-        } while (choix != 0);
+        } while (choice != 6);
 
         scanner.close();
     }

@@ -3,6 +3,7 @@ package com.hotelreservation.service;
 import com.hotelreservation.model.Reservation;
 import com.hotelreservation.repository.ReservationRepository;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class ReservationService {
@@ -18,16 +19,14 @@ public class ReservationService {
         reservationRepository.addReservation(reservation);
     }
 
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.getAllReservations();
+    public void updateReservation(Reservation reservation) throws SQLException {
+        reservationRepository.updateReservation(reservation);
     }
 
-    public Reservation getReservationById(int id) {
-        return reservationRepository.getReservationById(id);
+    public List<Reservation> getReservationsByClient(String clientCin) throws SQLException {
+        return reservationRepository.getReservationsByClientCin(clientCin);
     }
 
-    public void deleteReservationById(int id) {
-        reservationRepository.deleteReservation(id);
-    }
+
 
 }

@@ -34,123 +34,54 @@ public class ReservationRepository {
         }
     }
 
-    // Get a list of all reservations from the database
-    public List<Reservation> getAllReservations() {
+    // Fetch all reservations for a given client
+    public List<Reservation> getReservationsByClientCin(String clientCin) throws SQLException {
         List<Reservation> reservations = new ArrayList<>();
-        String query = "SELECT * FROM reservations";
+        String query = "SELECT r.* FROM reservations r " +
+                "JOIN clients c ON r.client_id = c.client_id " +
+                "WHERE c.cin = ?";
+
         try (Connection connection = DatabaseConfig.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, clientCin);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                // Fetch the reservation data from the result set
                 int reservationId = resultSet.getInt("reservation_id");
-                Date checkInDate = resultSet.getDate("check_in_date");
-                Date checkOutDate = resultSet.getDate("check_out_date");
                 int roomId = resultSet.getInt("room_id");
-                int clientId = resultSet.getInt("client_id");
+                LocalDate checkInDate = resultSet.getDate("check_in_date").toLocalDate();
+                LocalDate checkOutDate = resultSet.getDate("check_out_date").toLocalDate();
 
-                // Convert java.sql.Date to LocalDate
-                LocalDate localCheckInDate = checkInDate.toLocalDate();
-                LocalDate localCheckOutDate = checkOutDate.toLocalDate();
+                Room room = new RoomRepository().getRoomById(roomId);  // Fetch room details
+                Client client = new ClientRepository().getClientByCin(clientCin);  // Fetch client details
 
-                // Create Room and Client objects based on IDs
-                Room room = getRoomById(roomId);
-                Client client = getClientById(clientId);
-
-                // Create a new Reservation object
-                Reservation reservation = new Reservation(reservationId, client, room, localCheckInDate, localCheckOutDate);
-                reservations.add(reservation);
+                reservations.add(new Reservation(reservationId, client, room, checkInDate, checkOutDate));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+
         return reservations;
     }
 
-    // Find a reservation by its ID
-    public Reservation getReservationById(int reservationId) {
-        Reservation reservation = null;
-        String query = "SELECT * FROM reservations WHERE reservation_id = ?";
-        try (Connection connection = DatabaseConfig.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+    // Update the reservation in the database
+    public void updateReservation(Reservation reservation) throws SQLException {
+        String query = "UPDATE reservations SET check_in_date = ?, check_out_date = ? WHERE reservation_id = ?";
 
-            preparedStatement.setInt(1, reservationId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                Date checkInDate = resultSet.getDate("check_in_date");
-                Date checkOutDate = resultSet.getDate("check_out_date");
-                int roomId = resultSet.getInt("room_id");
-                int clientId = resultSet.getInt("client_id");
-
-                // Convert java.sql.Date to LocalDate
-                LocalDate localCheckInDate = checkInDate.toLocalDate();
-                LocalDate localCheckOutDate = checkOutDate.toLocalDate();
-
-                Room room = getRoomById(roomId);
-                Client client = getClientById(clientId);
-
-                reservation = new Reservation(reservationId, client, room, localCheckInDate, localCheckOutDate);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return reservation;
-    }
-
-    // Delete a reservation by its ID
-    public boolean deleteReservation(int reservationId) {
-        String query = "DELETE FROM reservations WHERE reservation_id = ?";
-        try (Connection connection = DatabaseConfig.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
-            preparedStatement.setInt(1, reservationId);
-
-            int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Update an existing reservation
-    public boolean updateReservation(int reservationId, Reservation updatedReservation) {
-        String query = "UPDATE reservations SET check_in_date = ?, check_out_date = ?, room_id = ?, client_id = ? WHERE reservation_id = ?";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             // Convert LocalDate to java.sql.Date
-            java.sql.Date sqlCheckInDate = java.sql.Date.valueOf(updatedReservation.getCheckInDate());
-            java.sql.Date sqlCheckOutDate = java.sql.Date.valueOf(updatedReservation.getCheckOutDate());
+            java.sql.Date sqlCheckInDate = java.sql.Date.valueOf(reservation.getCheckInDate());
+            java.sql.Date sqlCheckOutDate = java.sql.Date.valueOf(reservation.getCheckOutDate());
 
-            // Set the parameters for the update
+            // Set the parameters for the query
             preparedStatement.setDate(1, sqlCheckInDate);
             preparedStatement.setDate(2, sqlCheckOutDate);
-            preparedStatement.setInt(3, updatedReservation.getRoom().getRoomId());
-            preparedStatement.setInt(4, updatedReservation.getClient().getClientId());
-            preparedStatement.setInt(5, reservationId);
+            preparedStatement.setInt(3, reservation.getReservationId());
 
-            int rowsAffected = preparedStatement.executeUpdate();
-            return rowsAffected > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+            preparedStatement.executeUpdate();
         }
-        return false;
     }
 
-    // Method to fetch Room by ID (to be implemented)
-    private Room getRoomById(int roomId) {
-        // Implement logic to retrieve Room object from the database
-        // This might involve another repository or a similar approach
-        return null;
-    }
 
-    // Method to fetch Client by ID (to be implemented)
-    private Client getClientById(int clientId) {
-        // Implement logic to retrieve Client object from the database
-        // This might involve another repository or a similar approach
-        return null;
-    }
 }
