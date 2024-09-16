@@ -27,6 +27,11 @@ public class ReservationService {
         return reservationRepository.getReservationsByClientCin(clientCin);
     }
 
+    public void deleteReservationById(int reservationId) throws SQLException {
+        reservationRepository.deleteReservationById(reservationId);
+    }
+
+
 
 
 }

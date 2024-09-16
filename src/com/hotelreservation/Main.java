@@ -42,6 +42,9 @@ public class Main {
                 case 2:
                     reservationController.updateReservation();
                     break;
+                case 3:
+                    reservationController.cancelReservation();
+                    break;
                 // Add other cases as needed
                 case 6:
                     System.out.println("Exiting...");

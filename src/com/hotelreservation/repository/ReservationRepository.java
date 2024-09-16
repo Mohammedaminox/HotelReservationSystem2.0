@@ -84,4 +84,17 @@ public class ReservationRepository {
     }
 
 
+    public void deleteReservationById(int reservationId) throws SQLException {
+        String query = "DELETE FROM reservations WHERE reservation_id = ?";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setInt(1, reservationId);
+            preparedStatement.executeUpdate();
+        }
+    }
+
+
+
 }

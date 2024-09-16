@@ -174,6 +174,76 @@ public class ReservationController {
         }
     }
 
+    public void cancelReservation(){
+        try {
+            System.out.println("Enter your CIN:");
+            String clientCin = scanner.nextLine().trim();
+
+            // Check if CIN is not empty
+            if (clientCin.isEmpty()) {
+                System.out.println("CIN cannot be empty. Please enter valid details.");
+                return;
+            }
+
+            // Use ClientRepository to find the client
+            ClientRepository clientRepository = new ClientRepository();
+            Client client = clientRepository.getClientByCin(clientCin);
+
+            if (client == null) {
+                System.out.println("No client found with the given CIN.");
+                return;
+            }
+
+            // Use ReservationService to fetch all reservations for this client
+            List<Reservation> reservations = reservationService.getReservationsByClient(clientCin);
+
+            if (reservations.isEmpty()) {
+                System.out.println("No reservations found for this client.");
+                return;
+            }
+
+            // Display the reservations to the client
+            System.out.println("Your reservations:");
+            for (int i = 0; i < reservations.size(); i++) {
+                Reservation res = reservations.get(i);
+                System.out.println((i + 1) + ". Reservation ID: " + res.getReservationId() +
+                        ", Room ID: " + res.getRoom().getRoomId() +
+                        ", Check-in: " + res.getCheckInDate() +
+                        ", Check-out: " + res.getCheckOutDate());
+            }
+
+            // Let the user choose which reservation to update
+            System.out.println("Enter the number of the reservation you want to cancel:");
+            int reservationIndex = scanner.nextInt();
+            scanner.nextLine(); // Clear the buffer
+
+            if (reservationIndex < 1 || reservationIndex > reservations.size()) {
+                System.out.println("Invalid selection.");
+                return;
+            }
+
+            // Get the selected reservation
+            Reservation selectedReservation = reservations.get(reservationIndex - 1);
+
+            // Confirm the cancellation
+            System.out.println("Are you sure you want to cancel this reservation? (yes/no)");
+            String confirmation = scanner.nextLine().trim().toLowerCase();
+
+            if (!confirmation.equals("yes")) {
+                System.out.println("Cancellation aborted.");
+                return;
+            }
+
+            // Call the ReservationService to delete the reservation
+            reservationService.deleteReservationById(selectedReservation.getReservationId());
+
+            System.out.println("Reservation cancelled successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Error cancelling reservation: " + e.getMessage());
+        }
+    }
+
 
 
 
