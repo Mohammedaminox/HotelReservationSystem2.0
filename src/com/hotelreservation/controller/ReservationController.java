@@ -174,18 +174,18 @@ public class ReservationController {
         }
     }
 
-    public void cancelReservation(){
+    public void cancelReservation() {
         try {
+            // Step 1: Ask for CIN input
             System.out.println("Enter your CIN:");
             String clientCin = scanner.nextLine().trim();
 
-            // Check if CIN is not empty
             if (clientCin.isEmpty()) {
                 System.out.println("CIN cannot be empty. Please enter valid details.");
                 return;
             }
 
-            // Use ClientRepository to find the client
+            // Step 2: Get client by CIN
             ClientRepository clientRepository = new ClientRepository();
             Client client = clientRepository.getClientByCin(clientCin);
 
@@ -194,7 +194,7 @@ public class ReservationController {
                 return;
             }
 
-            // Use ReservationService to fetch all reservations for this client
+            // Step 3: Fetch reservations for the client
             List<Reservation> reservations = reservationService.getReservationsByClient(clientCin);
 
             if (reservations.isEmpty()) {
@@ -202,7 +202,7 @@ public class ReservationController {
                 return;
             }
 
-            // Display the reservations to the client
+            // Step 4: Display reservations to the user
             System.out.println("Your reservations:");
             for (int i = 0; i < reservations.size(); i++) {
                 Reservation res = reservations.get(i);
@@ -212,7 +212,7 @@ public class ReservationController {
                         ", Check-out: " + res.getCheckOutDate());
             }
 
-            // Let the user choose which reservation to update
+            // Step 5: Let the user select a reservation to cancel
             System.out.println("Enter the number of the reservation you want to cancel:");
             int reservationIndex = scanner.nextInt();
             scanner.nextLine(); // Clear the buffer
@@ -222,10 +222,8 @@ public class ReservationController {
                 return;
             }
 
-            // Get the selected reservation
+            // Step 6: Confirm cancellation
             Reservation selectedReservation = reservations.get(reservationIndex - 1);
-
-            // Confirm the cancellation
             System.out.println("Are you sure you want to cancel this reservation? (yes/no)");
             String confirmation = scanner.nextLine().trim().toLowerCase();
 
@@ -234,9 +232,10 @@ public class ReservationController {
                 return;
             }
 
-            // Call the ReservationService to delete the reservation
+            // Step 7: Cancel the reservation through the service layer
             reservationService.deleteReservationById(selectedReservation.getReservationId());
 
+            // Only the controller prints the success message
             System.out.println("Reservation cancelled successfully.");
 
         } catch (SQLException e) {

@@ -6,6 +6,7 @@ public class Reservation {
 
     //fields
     private int reservationId;
+    private boolean isDeleted;
     private Client client;
     private Room room;
     LocalDate checkInDate;
@@ -18,6 +19,7 @@ public class Reservation {
             this.room = room;
             this.checkInDate = checkInDate;
             this.checkOutDate = checkOutDate;
+            this.isDeleted = false;
     }
 
     //getters
@@ -40,6 +42,10 @@ public class Reservation {
     public LocalDate getCheckOutDate() {
         return checkOutDate;
     }
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
 
 
     //setters
@@ -51,10 +57,10 @@ public class Reservation {
         this.checkInDate = checkInDate;
     }
 
-
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
+
 
 
 }

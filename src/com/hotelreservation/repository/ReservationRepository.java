@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ReservationRepository {
 
-    // Add a new reservation to the database
+    // Add a new reservation
     public void addReservation(Reservation reservation) {
         String query = "INSERT INTO reservations (check_in_date, check_out_date, room_id, client_id) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConfig.getConnection();
@@ -39,7 +39,7 @@ public class ReservationRepository {
         List<Reservation> reservations = new ArrayList<>();
         String query = "SELECT r.* FROM reservations r " +
                 "JOIN clients c ON r.client_id = c.client_id " +
-                "WHERE c.cin = ?";
+                "WHERE c.cin = ? AND r.is_deleted = false";  // Fetch only non-deleted reservations
 
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -63,9 +63,10 @@ public class ReservationRepository {
         return reservations;
     }
 
-    // Update the reservation in the database
+    // Update the reservation
     public void updateReservation(Reservation reservation) throws SQLException {
-        String query = "UPDATE reservations SET check_in_date = ?, check_out_date = ? WHERE reservation_id = ?";
+        String query = "UPDATE reservations SET check_in_date = ?, check_out_date = ? " +
+                "WHERE reservation_id = ? AND is_deleted = false";
 
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -83,9 +84,9 @@ public class ReservationRepository {
         }
     }
 
-
+    // Delete the reservation
     public void deleteReservationById(int reservationId) throws SQLException {
-        String query = "DELETE FROM reservations WHERE reservation_id = ?";
+        String query = "UPDATE reservations SET is_deleted = true WHERE reservation_id = ?";
 
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -94,6 +95,9 @@ public class ReservationRepository {
             preparedStatement.executeUpdate();
         }
     }
+
+
+
 
 
 
