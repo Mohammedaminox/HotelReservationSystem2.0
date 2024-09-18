@@ -87,8 +87,12 @@ public class ReservationController {
                 return;
             }
 
+            // Calculate total price
+            double totalPrice = reservationService.calculateTotalPrice(room, checkInDate, checkOutDate);
+            System.out.println("The total price for your stay is: " + totalPrice);
+
             // Create a new Reservation object
-            Reservation reservation = new Reservation(0, client, room, checkInDate, checkOutDate);
+            Reservation reservation = new Reservation(0, client, room, checkInDate, checkOutDate, totalPrice);
 
             // Add the reservation
             reservationService.addReservation(reservation);
@@ -209,7 +213,8 @@ public class ReservationController {
                 System.out.println((i + 1) + ". Reservation ID: " + res.getReservationId() +
                         ", Room ID: " + res.getRoom().getRoomId() +
                         ", Check-in: " + res.getCheckInDate() +
-                        ", Check-out: " + res.getCheckOutDate());
+                        ", Check-out: " + res.getCheckOutDate() +
+                        ", Total Price: " + res.getPrice());
             }
 
             // Step 5: Let the user select a reservation to cancel

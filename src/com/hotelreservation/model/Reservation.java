@@ -11,15 +11,17 @@ public class Reservation {
     private Room room;
     LocalDate checkInDate;
     LocalDate checkOutDate;
+    private double price; // Total price for the stay
 
     //constructeur
-    public Reservation(int reservationId, Client client, Room room, LocalDate checkInDate, LocalDate checkOutDate) {
+    public Reservation(int reservationId, Client client, Room room, LocalDate checkInDate, LocalDate checkOutDate, double price) {
             this.reservationId = reservationId;
             this.client = client;
             this.room = room;
             this.checkInDate = checkInDate;
             this.checkOutDate = checkOutDate;
             this.isDeleted = false;
+            this.price = price;
     }
 
     //getters
@@ -42,6 +44,11 @@ public class Reservation {
     public LocalDate getCheckOutDate() {
         return checkOutDate;
     }
+
+    public double getPrice() {
+        return price;
+    }
+
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -57,9 +64,6 @@ public class Reservation {
         this.checkInDate = checkInDate;
     }
 
-    public void setDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
 
 
 

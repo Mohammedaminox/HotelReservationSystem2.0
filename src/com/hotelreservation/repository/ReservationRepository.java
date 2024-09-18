@@ -14,7 +14,7 @@ public class ReservationRepository {
 
     // Add a new reservation
     public void addReservation(Reservation reservation) {
-        String query = "INSERT INTO reservations (check_in_date, check_out_date, room_id, client_id) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO reservations (check_in_date, check_out_date, room_id, client_id, price) VALUES (?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConfig.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
@@ -27,6 +27,7 @@ public class ReservationRepository {
             preparedStatement.setDate(2, sqlCheckOutDate);
             preparedStatement.setInt(3, reservation.getRoom().getRoomId()); // Assuming room ID is an integer
             preparedStatement.setInt(4, reservation.getClient().getClientId()); // Assuming client ID is an integer
+            preparedStatement.setDouble(5, reservation.getPrice());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -52,11 +53,12 @@ public class ReservationRepository {
                 int roomId = resultSet.getInt("room_id");
                 LocalDate checkInDate = resultSet.getDate("check_in_date").toLocalDate();
                 LocalDate checkOutDate = resultSet.getDate("check_out_date").toLocalDate();
+                double price = resultSet.getDouble("price");
 
                 Room room = new RoomRepository().getRoomById(roomId);  // Fetch room details
                 Client client = new ClientRepository().getClientByCin(clientCin);  // Fetch client details
 
-                reservations.add(new Reservation(reservationId, client, room, checkInDate, checkOutDate));
+                reservations.add(new Reservation(reservationId, client, room, checkInDate, checkOutDate, price));
             }
         }
 
