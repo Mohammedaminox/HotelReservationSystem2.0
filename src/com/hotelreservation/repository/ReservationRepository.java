@@ -96,6 +96,29 @@ public class ReservationRepository {
         }
     }
 
+    public boolean isReservationOverlapping(int roomId, LocalDate checkInDate, LocalDate checkOutDate) throws SQLException {
+        String query = "SELECT COUNT(*) FROM reservations WHERE room_id = ? AND is_deleted = false AND " +
+                "(check_in_date < ? AND check_out_date > ?)";
+
+        try (Connection connection = DatabaseConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, roomId);
+            preparedStatement.setDate(2, java.sql.Date.valueOf(checkOutDate));  // Upper bound (end date)
+            preparedStatement.setDate(3, java.sql.Date.valueOf(checkInDate));   // Lower bound (start date)
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count > 0; // If count is more than 0, there is an overlapping reservation
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error checking for overlapping reservations: " + e.getMessage());
+        }
+        return false;
+    }
+
+
+
 
 
 
